@@ -3,7 +3,7 @@ module.exports = {
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/**/*-protocols.ts',
-    '!**/protocols/**/'
+    '!**/protocols/**'
   ],
   coverageDirectory: 'coverage',
   testEnvironment: 'node',
