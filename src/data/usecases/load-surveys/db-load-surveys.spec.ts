@@ -65,10 +65,10 @@ describe('DbLoadSurveys Usecase', () => {
     expect(surveys).toEqual(makeFakeSurveys())
   })
 
-  // test('Should throw if AddSurveyRepository throws', async () => {
-  //   const { sut, addSurveyRepositorySub } = makeSut()
-  //   jest.spyOn(addSurveyRepositorySub, 'add').mockRejectedValueOnce(new Error())
-  //   const promise = sut.add(makeFakeSurveyData())
-  //   await expect(promise).rejects.toThrow()
-  // })
+  test('Should throw if LoadSurveysRepository throws', async () => {
+    const { sut, loadSurveysRepositorySub } = makeSut()
+    jest.spyOn(loadSurveysRepositorySub, 'loadAll').mockRejectedValueOnce(new Error())
+    const promise = sut.load()
+    await expect(promise).rejects.toThrow()
+  })
 })
