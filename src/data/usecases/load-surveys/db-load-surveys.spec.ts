@@ -1,5 +1,5 @@
 import MockDate from 'mockdate'
-import { LoadSurveyRepository } from '../../protocols/db/survey/load-survey-repository'
+import { LoadSurveysRepository } from '../../protocols/db/survey/load-surveys-repository'
 import { SurveyModel } from '../../../domain/models/survey'
 import { DbLoadSurveys } from './db-load-surveys'
 
@@ -26,11 +26,11 @@ const makeFakeSurveys = (): SurveyModel[] => {
 
 interface SutTypes {
   sut: DbLoadSurveys
-  loadSurveyRepositorySub: LoadSurveyRepository
+  loadSurveysRepositorySub: LoadSurveysRepository
 }
 
-const makeLoadSurveyRepository = (): LoadSurveyRepository => {
-  class AddSurveyRepositorySub implements LoadSurveyRepository {
+const makeLoadSurveyRepository = (): LoadSurveysRepository => {
+  class AddSurveyRepositorySub implements LoadSurveysRepository {
     async loadAll (): Promise<SurveyModel[]> {
       return Promise.resolve(makeFakeSurveys())
     }
@@ -39,9 +39,9 @@ const makeLoadSurveyRepository = (): LoadSurveyRepository => {
 }
 
 const makeSut = (): SutTypes => {
-  const loadSurveyRepositorySub = makeLoadSurveyRepository()
-  const sut = new DbLoadSurveys(loadSurveyRepositorySub)
-  return { sut, loadSurveyRepositorySub }
+  const loadSurveysRepositorySub = makeLoadSurveyRepository()
+  const sut = new DbLoadSurveys(loadSurveysRepositorySub)
+  return { sut, loadSurveysRepositorySub }
 }
 
 describe('DbLoadSurveys Usecase', () => {
@@ -53,10 +53,10 @@ describe('DbLoadSurveys Usecase', () => {
     MockDate.reset()
   })
   test('Should call LoadSurveysRepository', async () => {
-    const { sut, loadSurveyRepositorySub } = makeSut()
-    const loadSpy = jest.spyOn(loadSurveyRepositorySub, 'loadAll')
+    const { sut, loadSurveysRepositorySub } = makeSut()
+    const loadAllSpy = jest.spyOn(loadSurveysRepositorySub, 'loadAll')
     await sut.load()
-    expect(loadSpy).toHaveBeenCalled()
+    expect(loadAllSpy).toHaveBeenCalled()
   })
 
   // test('Should throw if AddSurveyRepository throws', async () => {
