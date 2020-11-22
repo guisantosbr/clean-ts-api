@@ -2,34 +2,49 @@ import request from 'supertest'
 import app from '@/main/config/app'
 import { MongoHelper } from '@/infra/db/mongodb/helpers/mongo-helper'
 import { Collection } from 'mongodb'
-// import { hash } from 'bcrypt'
-// import { sign } from 'jsonwebtoken'
-// import env from '@/main/config/env'
+import { hash } from 'bcrypt'
+import { sign } from 'jsonwebtoken'
+import env from '@/main/config/env'
+import { SurveyModel } from '@/domain/models/survey'
 
 let surveyCollection: Collection
 let accountCollection: Collection
 
-// const makeAccessToken = async (): Promise<string> => {
-//   const password = await hash('123', 12)
-//   const res = await accountCollection.insertOne({
-//     name: 'Guilherme',
-//     email: 'guilherme.almeida@gmail.com',
-//     password,
-//     role: 'admin'
-//   })
-//
-//   const id = res.ops[0]._id
-//   const accessToken = sign({ id }, env.jwtSecret)
-//
-//   await accountCollection.updateOne({
-//     _id: id
-//   }, {
-//     $set: {
-//       accessToken
-//     }
-//   })
-//   return accessToken
-// }
+const makeAccessToken = async (): Promise<string> => {
+  const password = await hash('123', 12)
+  const res = await accountCollection.insertOne({
+    name: 'Guilherme',
+    email: 'guilherme.almeida@gmail.com',
+    role: 'admin',
+    password
+  })
+
+  const id = res.ops[0]._id
+  const accessToken = sign({ id }, env.jwtSecret)
+
+  await accountCollection.updateOne({
+    _id: id
+  }, {
+    $set: {
+      accessToken
+    }
+  })
+  return accessToken
+}
+
+const makeSurvey = async (): Promise<SurveyModel> => {
+  const res = await surveyCollection.insertOne({
+    question: 'Question',
+    answers: [{
+      anwswer: 'Answer 1',
+      image: 'http://image-name.com'
+    }, {
+      anwswer: 'Answer 2'
+    }],
+    date: new Date()
+  })
+  return MongoHelper.map(res.ops[0])
+}
 
 describe('Survey Routes', () => {
   beforeAll(async () => {
@@ -56,6 +71,21 @@ describe('Survey Routes', () => {
           anwswer: 'Answer 1'
         })
         .expect(403)
+    })
+
+    test('Should return 200 on save survey result with accessToken', async () => {
+      const survey = await makeSurvey()
+      const id = survey.id
+
+      const accessToken = await makeAccessToken()
+
+      await request(app)
+        .put(`/api/surveys/${id}/results`)
+        .set('x-access-token', accessToken)
+        .send({
+          anwswer: 'Answer 1'
+        })
+        .expect(200)
     })
   })
 })
