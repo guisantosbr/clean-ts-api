@@ -17,10 +17,22 @@ export const loginPath = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#schemas/account'
+              $ref: '#/schemas/account'
             }
           }
         }
+      },
+      400: {
+        $ref: '#/components/badRequest'
+      },
+      401: {
+        $ref: '#/components/unauthorized'
+      },
+      404: {
+        $ref: '#/components/notFound'
+      },
+      500: {
+        $ref: '#/components/serverError'
       }
     }
   }
